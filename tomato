@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+
+# The sound timeup.wav is
+# http://pansound.com/panicpumpkin/music/se/kettei_shouketteisf.wav
+# of
+# http://pansound.com/panicpumpkin/music/index.html
+# (C)PANICPUMPKIN
+
+import datetime, re, sys, subprocess, time
+
+fifo_fn = '/home/nushio/.emacs.d/org-mode-status.fifo'
+
+timestr = sys.argv[1]
+task = ' '.join(sys.argv[2:])
+time_span = 60 * float(timestr)
+sndfn = re.sub('tomato$', 'timeup.wav', __file__)
+beepfn = re.sub('tomato$', 'beep.wav', __file__)
+
+t_end = datetime.datetime.now() + datetime.timedelta(seconds = time_span)
+
+next_beep = None
+beep_interval = 300
+stretch_mode = False
+repeat_cnt = 1
+
+if re.search('stretch', task):
+    beep_interval = 60
+    stretch_mode = True
+    repeat_cnt = 4
+
+while True:
+    t = datetime.datetime.now()
+    dt = t_end - t
+    if dt <= datetime.timedelta(0):
+        break
+
+    dts = dt.seconds
+    dt_min = dts / 60
+    dt_sec = dts % 60
+
+    color = '#80f0f0'
+    if dt_min < 10:
+        color = '#ffff00'
+    if dt_min < 5:
+        color = '#ff4040'
+    if stretch_mode:
+        color = '#40ff40'
+
+    with open(fifo_fn, 'w') as fp:
+        fp.write('<fc={}>{:02}:{:02}</fc> '.format(color,dt_min, dt_sec)+task + "\n")
+
+
+    if next_beep is None:
+        next_beep = int(dt.total_seconds())/beep_interval * beep_interval
+    if int(dt.total_seconds()) <= next_beep:
+        cmd = 'nohup play {} repeat {}  2> /dev/null 1> /dev/null &'.format(beepfn, repeat_cnt)
+        subprocess.call(cmd,shell=True)
+        next_beep -= beep_interval
+        if not stretch_mode:
+            repeat_cnt += 1
+
+    time.sleep(0.001 + dt.microseconds/1.0e6)
+
+cmd = 'nohup play {} 2> /dev/null 1> /dev/null &'.format(sndfn)
+for i in range(10):
+    subprocess.call(cmd,shell=True)
+
+    with open(fifo_fn, 'w') as fp:
+        time.sleep(0.4)
+        fp.write("time is up\n")
+    with open(fifo_fn, 'w') as fp:
+        time.sleep(0.6)
+        fp.write("TIME IS UP\n")
