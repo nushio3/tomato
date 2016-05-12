@@ -1,9 +1,9 @@
 Copyright (c) 2016 Takayuki Muranushi
 
 This package is an aggregate of programs. `xvisbell` is a modification
-of the work by Rian Hunter and is redistributed under license
-`LICENSE.xvisbell`. I appologize for my modifications that misses the
-beauty of the original code.
+of the work https://github.com/rianhunter/xvisbell by Rian Hunter and
+is redistributed under license `LICENSE.xvisbell`. I appologize for my
+modifications that misses the beauty of the original code.
 
 The rest of the software except is my original work and is provided
 under license `LICENSE.tomato`.
