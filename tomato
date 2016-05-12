@@ -1,14 +1,20 @@
 #!/usr/bin/env python
 
-# The sound timeup.wav is
-# http://pansound.com/panicpumpkin/music/se/kettei_shouketteisf.wav
-# of
+# The sound timeup.wav and beep.wav are provided by
 # http://pansound.com/panicpumpkin/music/index.html
 # (C)PANICPUMPKIN
 
 import datetime, re, sys, subprocess, time
 
-fifo_fn = '/home/nushio/.emacs.d/org-mode-status.fifo'
+# TODO: proper way to detect the home folder
+tomato_confdir = '/home/nushio/.tomato/'
+subprocess.call('mkdir -p ' + tomato_confdir, shell=True)
+
+t_begin = datetime.datetime.now()
+
+log_fn  = tomato_confdir + 'log-{}'.format(t_begin.year)
+fifo_fn = tomato_confdir + 'status.fifo'
+conf_fn = tomato_confdir + 'conf'
 
 timestr = sys.argv[1]
 task = ' '.join(sys.argv[2:])
@@ -22,6 +28,13 @@ next_beep = None
 beep_interval = 300
 stretch_mode = False
 repeat_cnt = 1
+
+def write_log(completed = True):
+    if not completed:
+        t_end = datetime.datetime.now()
+    with open(log_fn, 'a') as fp:
+        fp.write('{} {} {}'.format(t_begin, t_end, task))
+
 
 if re.search('stretch', task):
     beep_interval = 60
