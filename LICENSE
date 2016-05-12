@@ -1,7 +1,14 @@
 Copyright (c) 2016 Takayuki Muranushi
 
-This is a compound software.  The rest of the software except those
-under `xvisbell` is my original work and is provided under license
-`LICENSE.tomato` .  `xvisbell` is a modification of the work by XXX
-and is provided under license `LICENSE.xvisbell` . And I appologize
-for my modifications that misses the beauty of the original code.
+This package is an aggregate of programs. `xvisbell` is a modification
+of the work by Rian Hunter and is redistributed under license
+`LICENSE.xvisbell`. I appologize for my modifications that misses the
+beauty of the original code.
+
+The rest of the software except is my original work and is provided
+under license `LICENSE.tomato`.
+
+The Pomodoro Technique(R) - proudly developed by Francesco Cirillo
+
+Pomodoro Technique(R) and Pomodoro(R) are registered trademarks of
+Francesco Cirillo.
