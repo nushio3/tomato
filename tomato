@@ -9,22 +9,26 @@ import datetime, os, re, sys, subprocess, time
 global t_begin, t_end
 
 # TODO: proper way to detect the home folder
-tomato_confdir = os.environ['HOME'] + '/Dropbox/tomato/'
+tomato_logdir = os.environ['HOME'] + '/Dropbox/tomato/'
+tomato_statusdir = os.environ['HOME'] + '/.tomato/'
 try:
-    os.makedirs(tomato_confdir)
+    os.makedirs(tomato_logdir)
+except:
+    pass
+
+try:
+    os.makedirs(tomato_statusdir)
 except:
     pass
 
 t_begin = datetime.datetime.now()
 
-log_fn  = tomato_confdir + 'log-{}'.format(t_begin.year)
-fifo_fn = tomato_confdir + 'status.fifo'
-conf_fn = tomato_confdir + 'conf'
+log_fn  = tomato_logdir + 'log-{}'.format(t_begin.year)
+fifo_fn = tomato_statusdir + 'status.fifo'
+conf_fn = tomato_logdir + 'conf'
 
-try:
-    os.makefifo(fifo_fn)
-except:
-    pass
+if not os.path.exists(fifo_fn):
+    os.mkfifo(fifo_fn)
 
 time_format = "%Y-%m-%dT%H:%M:%S"
 
