@@ -4,11 +4,16 @@
 # http://pansound.com/panicpumpkin/music/index.html
 # (C)PANICPUMPKIN
 
-import datetime, re, sys, subprocess, time
+import datetime, os, re, sys, subprocess, time
+
+global t_begin, t_end
 
 # TODO: proper way to detect the home folder
-tomato_confdir = '/home/nushio/.tomato/'
-subprocess.call('mkdir -p ' + tomato_confdir, shell=True)
+tomato_confdir = os.environ['HOME'] + '/Dropbox/tomato/'
+try:
+    os.makedirs(tomato_confdir)
+except:
+    pass
 
 t_begin = datetime.datetime.now()
 
@@ -16,11 +21,19 @@ log_fn  = tomato_confdir + 'log-{}'.format(t_begin.year)
 fifo_fn = tomato_confdir + 'status.fifo'
 conf_fn = tomato_confdir + 'conf'
 
+try:
+    os.makefifo(fifo_fn)
+except:
+    pass
+
+time_format = "%Y-%m-%dT%H:%M:%S"
+
 timestr = sys.argv[1]
 task = ' '.join(sys.argv[2:])
 time_span = 60 * float(timestr)
 sndfn = re.sub('tomato$', 'timeup.wav', __file__)
 beepfn = re.sub('tomato$', 'beep.wav', __file__)
+xvisbellfn = re.sub('tomato$', 'xvisbell', __file__)
 
 t_end = datetime.datetime.now() + datetime.timedelta(seconds = time_span)
 
@@ -30,10 +43,12 @@ stretch_mode = False
 repeat_cnt = 1
 
 def write_log(completed = True):
+    global t_begin, t_end
+
     if not completed:
         t_end = datetime.datetime.now()
     with open(log_fn, 'a') as fp:
-        fp.write('{} {} {}'.format(t_begin, t_end, task))
+        fp.write("{} {} {}\n".format(t_begin.strftime(time_format), t_end.strftime(time_format), task))
 
 
 if re.search('stretch', task):
@@ -68,12 +83,14 @@ while True:
     if int(dt.total_seconds()) <= next_beep:
         cmd = 'nohup play {} repeat {}  2> /dev/null 1> /dev/null &'.format(beepfn, repeat_cnt)
         subprocess.call(cmd,shell=True)
+        subprocess.call(xvisbellfn,shell=True)
         next_beep -= beep_interval
         if not stretch_mode:
             repeat_cnt += 1
 
     time.sleep(0.001 + dt.microseconds/1.0e6)
 
+write_log()
 cmd = 'nohup play {} 2> /dev/null 1> /dev/null &'.format(sndfn)
 for i in range(10):
     subprocess.call(cmd,shell=True)
