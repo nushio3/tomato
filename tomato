@@ -94,6 +94,7 @@ write_log()
 cmd = 'nohup play {} 2> /dev/null 1> /dev/null &'.format(sndfn)
 for i in range(10):
     subprocess.call(cmd,shell=True)
+    subprocess.call(xvisbellfn,shell=True)
 
     with open(fifo_fn, 'w') as fp:
         time.sleep(0.4)
