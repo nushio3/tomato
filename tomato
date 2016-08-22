@@ -92,6 +92,7 @@ while True:
     time_str = '{:02}:{:02}'.format(dt_min, dt_sec)
     subprocess.call('clear')
     print figlet.renderText(time_str)
+    print task
 
     with open(fifo_fn, 'w') as fp:
         fp.write('<fc={}>{:02}:{:02}</fc> '.format(color,dt_min, dt_sec)+task + "\n")
