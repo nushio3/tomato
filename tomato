@@ -67,6 +67,8 @@ def write_log(completed = True):
 
 
 if re.search('stretch', task):
+    cmd = 'nohup play {} repeat {}  2> /dev/null 1> /dev/null &'.format(beepfn, 1)
+    subprocess.call(cmd,shell=True)
     beep_interval = 60
     stretch_mode = True
     repeat_cnt = 4
