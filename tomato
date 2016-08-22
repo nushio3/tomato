@@ -4,9 +4,14 @@
 # http://pansound.com/panicpumpkin/music/index.html
 # (C)PANICPUMPKIN
 
-import datetime, os, re, sys, subprocess, time
+import datetime, os, re, signal, sys, subprocess, time
+from pyfiglet import Figlet
 
 global t_begin, t_end
+
+#figlet = Figlet(font='doh')
+figlet = Figlet(font='fraktur')
+
 
 # TODO: proper way to detect the home folder
 tomato_logdir = os.environ['HOME'] + '/Dropbox/tomato/'
@@ -20,6 +25,12 @@ try:
     os.makedirs(tomato_statusdir)
 except:
     pass
+
+
+def signal_handler(signal, frame):
+    write_log(False)
+    sys.exit(0)
+signal.signal(signal.SIGINT, signal_handler)
 
 t_begin = datetime.datetime.now()
 
@@ -77,6 +88,10 @@ while True:
         color = '#ff4040'
     if stretch_mode:
         color = '#40ff40'
+
+    time_str = '{:02}:{:02}'.format(dt_min, dt_sec)
+    subprocess.call('clear')
+    print figlet.renderText(time_str)
 
     with open(fifo_fn, 'w') as fp:
         fp.write('<fc={}>{:02}:{:02}</fc> '.format(color,dt_min, dt_sec)+task + "\n")
